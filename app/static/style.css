@@ -4,3 +4,85 @@ header {
 h1 {
     color: #ff6400;
 }
+header {
+    background-color: #36312B;
+    border-bottom: 2px solid #6e6458;
+    width:max-content;
+}
+body {
+    background-color: #36312B;
+    color: #B3B3B3;
+    padding-bottom: 50px;
+}
+footer {
+    background-color: #36312B;
+    border-top: 2px solid #6e6458;
+}
+a {
+    text-decoration: none;
+}
+.sidebar {
+    position: fixed;
+    border: 2px solid #6e6458;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar li {
+    border-bottom: 2px solid #6e6458;
+}
+
+.sidebar li:last-child {
+    border-bottom: none;
+}
+
+.sidebar a {
+    display: block;
+    padding: 15px 20px;
+    color: #B3B3B3;
+    font-weight: 500;
+}
+
+
+.sidebar a:hover {
+    background-color: #6e6458;
+}
+
+
+#opinions {
+    transform: scale(0.75);
+    transform-origin: top left;
+    margin-left:25px;
+    border-collapse: collapse;
+    width: 100%;
+    font-family: Arial, sans-serif;
+}
+
+#opinions thead {
+    background-color: #6e6458;
+    color: #36312B;
+    text-align: left;
+}
+
+#opinions thead th {
+    text-align: center;
+    color: #36312B;
+    background-color: #6e6458;
+    padding: 10px;
+    border: 1px solid #36312B;
+}
+
+#opinions tbody td {
+    padding: 8px;
+    border: 1px solid #6e6458;
+}
+
+#opinions tbody tr:hover {
+    background-color: #463f37;
+}

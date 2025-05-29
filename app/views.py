@@ -19,7 +19,7 @@ def display_form():
 @app.route("/", methods=["POST"])
 def extract():
     product_id = request.form.get("product_id")
-    next_page = (f"https://www.ceneo.pl/{product_id}#tab=reviews")
+    next_page = f"https://www.ceneo.pl/{product_id}#tab=reviews"
     response = requests.get(next_page,headers=headers)
     if response.status_code == 200:
         page_dom = BeautifulSoup(response.text, "html.parser")
@@ -33,6 +33,7 @@ def extract():
         return render_template("extract.html", error=error)
     all_opinions = []
     while next_page:
+        print(next_page)
         response = requests.get(next_page,headers=headers)
         if response.status_code == 200:
             page_dom = BeautifulSoup(response.text, "html.parser")
@@ -47,17 +48,14 @@ def extract():
                 next_page = "https://www.ceneo.pl" + utils.extract_feature(page_dom,"a.pagination__next","href")
             except TypeError:
                 next_page = None
-                print("Brak kolejnej strony.")
-        else:
-            print(f"{response.status_code}")
+        else: print(f"{response.status_code}")
     if not os.path.exists("./app/data"):
         os.mkdir("./app/data")
     if not os.path.exists("./app/data/opinions"):
         os.mkdir("./app/data/opinions")
     with open(f"./app/data/opinions/{product_id}.json", "w", encoding="UTF-8") as jf:
         json.dump(all_opinions, jf, indent=4, ensure_ascii=False)
-
-    return redirect(url_for("product", product_id=product_id, product_name=product_name))
+    return redirect(url_for('product', product_id=product_id, product_name=product_name))
 
 @app.route("/products")
 def products():
@@ -69,6 +67,6 @@ def author():
 
 @app.route("/product/<product_id>")
 def product(product_id):
-    product_name = request.args.get("product_name")
+    product_name = request.args.get('product_name')
     opinions = pd.read_json(f"./app/data/opinions/{product_id}.json")
-    return render_template("product.html", product_id=product_id, product_name=product_name, opinions=opinions.to_html(classes="display", table_id='opinions'))
+    return render_template("product.html", product_id=product_id, product_name=product_name, opinions=opinions.to_html(table_id='opinions', classes=['display']))

@@ -4,9 +4,10 @@
     {% if error is defined %}
         <p>{{error}}</p>
     {% endif %}
-    <form action="{{url_for('extract')}}" method="post">
+    <form action="{{url_for('extract')}}" method="post" style="padding-top: 30px;">
         <label for="product_id">Kod produktu</label>
-        <input type="text" name="product_id" id="product_id" required>
-        <button type="submit">Pobierz opinię</button>
+        <input type="text" name="product_id" id="product_id" style="background-color:#B3B3B3; color: #36312B" required>
+        <button type="submit" style="background-color:inherit; color: #B3B3B3; border-color: #B3B3B3;">Pobierz opinię</button>
     </form>
+    <p style="padding-top: 20px;">Podaj kod produktu którego opinie chcesz pobrać</p>
 {% endblock %}
