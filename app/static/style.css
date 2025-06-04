@@ -56,18 +56,18 @@ a {
 
 
 #opinions {
-    transform: scale(0.75);
+    max-width: 100%; 
+    overflow: hidden;
     transform-origin: top left;
     margin-left:25px;
     border-collapse: collapse;
-    width: 100%;
     font-family: Arial, sans-serif;
 }
 
 #opinions thead {
     background-color: #6e6458;
     color: #36312B;
-    text-align: left;
+    text-align: center;
 }
 
 #opinions thead th {
