@@ -175,3 +175,4 @@ cython_debug/
 
 app/data/
 config.py
+app/static/images/charts

@@ -7,7 +7,7 @@ selectors = {
      "pros": ("div.review-feature__item--positive",None,True),
      "cons": ("div.review-feature__item--negative",None,True),
      "useful": ("button.vote-yes > span",),
-     "useless": ("button.vote-no > span",),
+     "unuseful": ("button.vote-no > span",),
      "post_date": ("span.user-post__published > time:nth-child(1)",'datetime'),
      "purchase_date": ("span.user-post__published > time:nth-child(2)",'datetime'),
 }
