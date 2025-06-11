@@ -47,6 +47,16 @@ a {
     background-color: #6e6458;
 }
 /*PRODUCT SITE*/
+.btn-group {
+    margin-top: 20px
+}
+.dt-input {
+    background-color: #36312B !important;
+}
+.modal-content {
+    background-color: #36312B;
+}
+    /*tabela*/
 #opinions {
     max-width: 100%; 
     overflow: hidden;

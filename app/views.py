@@ -3,12 +3,12 @@ import os
 import json
 import requests
 import pandas as pd
-from flask import render_template, request, redirect, url_for
+from flask import render_template, request, redirect, url_for, Response, send_file
 from config import headers
 from bs4 import BeautifulSoup
 from matplotlib import pyplot as plt
 from app import utils
-
+import io
 import matplotlib
 matplotlib.use('Agg')
 
@@ -20,9 +20,9 @@ def index():
 def display_form():
     return render_template("extract.html")
 
-@app.route("/", methods=["POST"])
+@app.route("/extract", methods=["POST"])
 def extract():
-    product_id = request.form.get("product_id")
+    product_id = request.form.get("product_id").strip()
     next_page = f"https://www.ceneo.pl/{product_id}#tab=reviews"
     response = requests.get(next_page,headers=headers)
     if response.status_code == 200:
@@ -92,6 +92,19 @@ def products():
             product = json.load(jf)
             products_list.append(product)
     return render_template("products.html", products=products_list)
+from app.models import Product, Opinion
+
+# ALTERNATYWNIE PODEJŚCIE OBIEKTOWE
+#@app.route("/products")
+#def products():
+#    products_files = os.listdir("./app/data/products")
+#    products_list = []
+#    for filename in products_files:
+#        with open(f"./app/data/products/{filename}", "r", encoding="utf-8") as jf:
+#            data = json.load(jf)
+#            product = Product.from_dict(data)
+#            products_list.append(product)
+#    return render_template("products.html", products=products_list)
 
 @app.route("/author")
 def author():
@@ -123,7 +136,7 @@ def charts(product_id):
         autopct = "%1.1f%%"
         )
     plt.title(f"Rozkład rekomendacji w opiniach o produkcie {product_id}", 
-          color='#B3B3B3', fontsize=16, pad=20)
+          color='#B3B3B3', fontsize=14, pad=20)
     plt.gcf().patch.set_facecolor('#36312B')
     plt.savefig(f"./app/static/images/charts/{stats['product_id']}_pie.png")
     plt.close()
@@ -154,4 +167,40 @@ def charts(product_id):
     plt.close()
     return render_template("charts.html", product_id=product_id, product_name=stats['product_name']) 
 
-#TRZEBA DODAĆ FUNKCJONALNOŚĆ PRZYCISKÓW DO POBIERANIA W DANYCH FORMATACH
+@app.route("/download/<product_id>/<filetype>")
+def download(product_id, filetype):
+    opinions_path = os.path.join(app.root_path, "data", "opinions", f"{product_id}.json")
+    if not os.path.exists(opinions_path):
+        return "Opinie nie znalezione", 404
+
+    with open(opinions_path, "r", encoding="utf-8") as jf:
+        opinions = json.load(jf)
+    df = pd.DataFrame(opinions)
+
+    if filetype == "json":
+        return send_file(
+            opinions_path,
+            mimetype="application/json",
+            as_attachment=True,
+            download_name=f"{product_id}.json"
+        )
+    elif filetype == "csv":
+        output = io.StringIO()
+        df.to_csv(output, index=False)
+        output.seek(0)
+        return Response(
+            output.getvalue(),
+            mimetype="text/csv",
+            headers={"Content-Disposition": f"attachment;filename={product_id}.csv"}
+        )
+    elif filetype == "xlsx":
+        output = io.BytesIO()
+        df.to_excel(output, index=False, engine='openpyxl')
+        output.seek(0)
+        return Response(
+            output.getvalue(),
+            mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            headers={"Content-Disposition": f"attachment;filename={product_id}.xlsx"}
+        )
+    else:
+        return "Nieobsługiwany format", 400

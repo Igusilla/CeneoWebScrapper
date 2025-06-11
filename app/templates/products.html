@@ -11,9 +11,10 @@
             <span class="badge bg-success rounded-pill">{{product.pros_count}}</span>
             <span class="badge bg-danger rounded-pill">{{product.cons_count}}</span>
             <span class="badge bg-ceneo rounded-pill">{{product.average_stars|round(2)}}</span>
-            <a type="button" class="btn btn-info" href="#">CSV</a>
-            <a type="button" class="btn btn-info" href="#">XLSX</a>
-            <a type="button" class="btn btn-info" href="#">JSON</a>
+            <a type="button" class="btn btn-info" href="{{ url_for('download', product_id=product.product_id, filetype='csv') }}">CSV</a>
+            <a type="button" class="btn btn-info" href="{{ url_for('download', product_id=product.product_id, filetype='xlsx') }}">XLSX</a>
+            <a type="button" class="btn btn-info" href="{{ url_for('download', product_id=product.product_id, filetype='json') }}">JSON</a>
+            
         </li>
         {% endfor %}
 </ul>
