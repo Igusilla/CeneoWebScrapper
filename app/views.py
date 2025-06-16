@@ -92,19 +92,6 @@ def products():
             product = json.load(jf)
             products_list.append(product)
     return render_template("products.html", products=products_list)
-from app.models import Product, Opinion
-
-# ALTERNATYWNIE PODEJŚCIE OBIEKTOWE
-#@app.route("/products")
-#def products():
-#    products_files = os.listdir("./app/data/products")
-#    products_list = []
-#    for filename in products_files:
-#        with open(f"./app/data/products/{filename}", "r", encoding="utf-8") as jf:
-#            data = json.load(jf)
-#            product = Product.from_dict(data)
-#            products_list.append(product)
-#    return render_template("products.html", products=products_list)
 
 @app.route("/author")
 def author():
