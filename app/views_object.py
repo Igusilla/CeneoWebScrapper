@@ -1,8 +1,9 @@
 from app import app
-from flask import render_template, request, redirect, url_for, Response, send_file
-from app.models import ProductManager, OpinionManager, ChartManager
-import io
-import os
+from flask import render_template, request, redirect, url_for
+from app.managers.opinion_manager import OpinionManager
+from app.managers.product_manager import ProductManager
+from app.utilities.chart_generator import ChartGenerator
+from app.managers.download_manager import DownloadManager
 
 @app.route("/")
 def index():
@@ -25,6 +26,10 @@ def products():
     products = ProductManager.all()
     return render_template("products.html", products=products)
 
+@app.route("/author")
+def author():
+    return render_template("author.html")
+
 @app.route("/product/<product_id>")
 def product(product_id):
     product_name = request.args.get('product_name')
@@ -33,46 +38,10 @@ def product(product_id):
 
 @app.route("/charts/<product_id>")
 def charts(product_id):
-    ChartManager.generate_charts(product_id)
+    ChartGenerator.generate_charts(product_id)
     stats = ProductManager.get_stats(product_id)
     return render_template("charts.html", product_id=product_id, product_name=stats['product_name'])
 
 @app.route("/download/<product_id>/<filetype>")
 def download(product_id, filetype):
-    df = OpinionManager.to_dataframe(product_id)
-    if filetype == "json":
-        path = os.path.join(app.root_path, "data", "opinions", f"{product_id}.json")
-        return send_file(
-            path,
-            mimetype="application/json",
-            as_attachment=True,
-            download_name=f"{product_id}.json"
-        )
-    elif filetype == "csv":
-        output = io.StringIO()
-        df.to_csv(output, index=False)
-        output.seek(0)
-        return Response(
-            output.getvalue(),
-            mimetype="text/csv",
-            headers={"Content-Disposition": f"attachment;filename={product_id}.csv"}
-        )
-    elif filetype == "xlsx":
-        output = io.BytesIO()
-        df.to_excel(output, index=False, engine='openpyxl')
-        output.seek(0)
-        return Response(
-            output.getvalue(),
-            mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            headers={"Content-Disposition": f"attachment;filename={product_id}.xlsx"}
-        )
-    else:
-        return "Nieobsługiwany format", 400
-
-from flask.views import MethodView
-
-class AuthorView(MethodView):
-    def get(self):
-        return render_template("author.html")
-
-app.add_url_rule("/author", view_func=AuthorView.as_view("author"))
+    return DownloadManager.download(product_id, filetype, app.root_path)
